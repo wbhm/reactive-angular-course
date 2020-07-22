@@ -1,5 +1,8 @@
-import {Component } from '@angular/core';
+import {Component, OnInit } from '@angular/core';
 import { CoursesService } from '../services/courses.service';
+import { Observable } from 'rxjs';
+import { Course, sortCoursesBySeqNo } from 'app/model/course';
+import { map } from 'rxjs/operators';
 
 
 
@@ -8,12 +11,31 @@ import { CoursesService } from '../services/courses.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent  implements OnInit {
 
-  beginnerCourses$ = this.coursesService.beginnerCourses$;
-  advancedCourses$ = this.coursesService.advancedCourses$;
+  beginnerCourses$: Observable<Course[]>;
+  advancedCourses$: Observable<Course[]>;
 
   constructor(private coursesService: CoursesService) {}
+
+  ngOnInit() {
+    this.reloadCourses();
+  }
+
+  reloadCourses() {
+    const courses$ = this.coursesService.loadAllCourses().pipe(
+      map(courses => courses.sort(sortCoursesBySeqNo))
+    );
+
+    this.beginnerCourses$ = courses$.pipe(
+      map(courses => courses.filter(course => course.category === 'BEGINNER'))
+    );
+
+    this.advancedCourses$ = courses$.pipe(
+      map(courses => courses.filter(course => course.category === 'ADVANCED'))
+    );
+
+  }
 
 }
 
