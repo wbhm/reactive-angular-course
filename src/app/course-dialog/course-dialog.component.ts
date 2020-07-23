@@ -7,12 +7,16 @@ import {catchError} from 'rxjs/operators';
 import {throwError} from 'rxjs';
 import { CoursesService } from 'app/services/courses.service';
 import { LoadingService } from 'app/loading/loading.service';
+import { MessagesService } from 'app/messages/messages.service';
 
 @Component({
     selector: 'course-dialog',
     templateUrl: './course-dialog.component.html',
     styleUrls: ['./course-dialog.component.css'],
-    providers: [ LoadingService ]
+    providers: [
+        LoadingService,
+        MessagesService
+    ]
 })
 export class CourseDialogComponent {
 
@@ -25,6 +29,7 @@ export class CourseDialogComponent {
         private dialogRef: MatDialogRef<CourseDialogComponent>,
         private courseService: CoursesService,
         private loadingService: LoadingService,
+        private messagesService: MessagesService,
         @Inject(MAT_DIALOG_DATA) course: Course) {
 
         this.course = course;
@@ -41,7 +46,15 @@ export class CourseDialogComponent {
     save() {
 
       const changes = this.form.value;
-      const saveCourse$ = this.courseService.saveCourse(this.course.id, changes);
+      const saveCourse$ = this.courseService.saveCourse(this.course.id, changes)
+      .pipe(
+          catchError(error => {
+            const message = 'Unable to save sourse edits';
+            console.log(message, error);
+            this.messagesService.showErrors(message);
+            return throwError(error);
+          })
+      );
       this.loadingService.showLoaderUntilCompleted(saveCourse$)
       .subscribe(
         val => {
