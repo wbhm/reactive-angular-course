@@ -3,9 +3,7 @@
   <h2>Search All Lessons</h2>
 
   <mat-form-field class="search-bar">
-
     <input matInput placeholder="Type your search" #searchInput autocomplete="off">
-
   </mat-form-field>
 
   <button class="search" mat-raised-button color="primary" (click)="onSearch(searchInput.value)">
@@ -32,6 +30,7 @@
       </table>
     </ng-container>
   </ng-container>
+
   <ng-template #detail>
     <button mat-raised-button class='back-btn' (click)='onBackToSearch()'>
       <mat-icon>arrow_back_ios</mat-icon>
@@ -39,7 +38,6 @@
     </button>
     <lesson [lesson]='activeLesson'></lesson>
   </ng-template>
-
 
 </div>
 
