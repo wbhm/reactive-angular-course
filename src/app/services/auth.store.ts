@@ -27,7 +27,7 @@ export class AuthStore {
         );
 
         const userData = localStorage.getItem(USER_DATA);
-        if (userData){
+        if (userData) {
             this.userSubject.next(JSON.parse(userData));
         }
     }
@@ -36,7 +36,7 @@ export class AuthStore {
         return this.http.post<User>('/api/login', {email, password}).pipe(
             tap(user => {
                 this.userSubject.next(user);
-                localStorage.setItem(USER_DATA, JSON.stringify(user))
+                localStorage.setItem(USER_DATA, JSON.stringify(user));
             }),
             shareReplay()
         );
