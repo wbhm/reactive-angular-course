@@ -36,8 +36,16 @@ export class CourseComponent implements OnInit {
     private coursesService: CoursesService) {
 
     const courseId = parseInt(this.route.snapshot.paramMap.get('courseId'));
-    const course$ = this.coursesService.loadCourseById(courseId);
-    const lessons$ = this.coursesService.loadAllCourseLessons(courseId);
+
+    // NOTE: combineLatest requries BOTH observables to emit at least once BEFORE emitting its first 'combined' value
+    // combineLatest will then emit whenever and obervable emits a value.  To make sure each observable fires ASAP, use startWith
+    const course$ = this.coursesService.loadCourseById(courseId).pipe(
+      startWith(null)
+    );
+    const lessons$ = this.coursesService.loadAllCourseLessons(courseId).pipe(
+      startWith([])
+    );
+
 
     this.courseData$ = combineLatest([course$, lessons$]).pipe(
       map(([course, lessons]) =>  {
